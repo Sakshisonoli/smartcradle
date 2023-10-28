@@ -1,7 +1,9 @@
 # smartcradle
 
 Cradle Swing Control System Readme
+
 Author: Sakshi
+
 Date: 26-June-2023
 
 * INTRODUCTION
