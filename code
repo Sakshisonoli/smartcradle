@@ -1,0 +1,408 @@
+/* Program to swing the cradle with the required speed(position),toy,music.
+ * Author:Sakshi
+ * Date:26-June-2023
+ */
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+/* Node to represent speed data in the list. */
+struct speed
+{
+    int speed;
+    struct speed *link;
+};
+
+/* Node to represent toy data in the list. */
+struct toy
+{
+    char toy[10];
+    struct toy *rtlink;
+    struct toy *ltlink;
+};
+
+/* Node to represent music data in the list. */
+struct music
+{
+    char music[10];
+    struct music *rmlink;
+    struct music *lmlink;
+};
+
+/* Abbreviating the data types to make further initializations simpler. */
+
+typedef struct speed* SPEED;
+typedef struct toy* TOY;
+typedef struct music* MUSIC;
+
+/* Function Declarations */
+int searchT(TOY,TOY);
+int searchM(MUSIC,MUSIC);
+SPEED swingSpeed(SPEED);
+TOY swingToy(TOY);
+MUSIC swingMusic(MUSIC);
+void backwardToy();
+void previousM();
+void nextM();
+void displayS(SPEED);
+void displayT(TOY);
+void displayM(MUSIC);
+void menu();
+
+/* Global variable declaration to keep track of the current name of the toy and music. */
+TOY curT=NULL;
+MUSIC curM=NULL;
+
+/* saveSpeedLinkedListToFile:Function to save the speed list in the file.
+ * Param:head-Head of the speed list which is pointing to the first node.
+         filename:Name of the file in which the list has to be saved.
+ */
+void saveSpeedLinkedListToFile(SPEED head, const char* filename) {
+    FILE* file = fopen(filename, "wb");
+    if (file == NULL) {
+        printf("Error opening file.\n");
+        return;
+    }
+    else{
+        
+        while (head != NULL) {
+        fwrite(&(head->speed), sizeof(int), 1, file);
+        head = head->link;
+    }
+    }
+
+    fclose(file);
+}
+
+/* loadSpeedLinkedListFromFile:Function to load the speed list from the file.
+ * Param:filename-Name of the file from which the list has to be loaded.
+ * Return:head:Head of the speed list which is pointing to the first node.
+ */
+SPEED loadSpeedLinkedListFromFile(const char* filename) {
+    FILE* file = fopen(filename, "rb");
+    if (file == NULL) {
+        printf("Error opening file.\n");
+        return NULL;
+    }
+
+
+    SPEED head = NULL;
+    SPEED current = NULL;
+    int speed;
+
+
+    while (fread(&speed, sizeof(int), 1, file) == 1) {
+        SPEED newNode = (SPEED)malloc(sizeof(struct speed));
+        newNode->speed = speed;
+        newNode->link = NULL;
+
+        if (head == NULL) {
+            head = newNode;
+            current = head;
+        } else {
+            current->link = newNode;
+            current = current->link;
+        }
+    }
+    printf("\nSwing the cradle with the speeds>");
+    displayS(head);
+
+    fclose(file);
+    return head;
+}
+
+int main(){
+
+    /*Assume that the sensor sends 1 and 0 as a result of baby crying*/
+    int data;
+    /*data=Serial,read();*/
+    if(data==1)
+        printf("\nSwing the cradle");
+    else
+        printf("\nThe cradle is not swinging");
+
+        menu();
+}
+
+/* menu:Function to select the choice from the given menu */
+void menu(){
+    int ch;
+
+    SPEED sh = NULL;
+    TOY th=NULL;
+    MUSIC mt=NULL;
+
+
+    for(;;){
+    printf("\n");
+    printf("\n--------PRESS---------\n1:To swing the cradle with speed\n2:To swing the cradle with a toy\n3:To swing the cradle while playing music\n4:To swing the cradle with the previously entered speed\n5:To rotate the toys according to the list backward\n6:To play the previous music\n7:To play the next music\n8:To display the speed list\n9:To display the toy list\n10:To display the music list\n11:To exit\n");
+    scanf("%d",&ch);
+
+        switch(ch){
+
+            case 1:sh=swingSpeed(sh);
+                    break;
+
+            case 2:th=swingToy(th);
+                    break;
+
+            case 3:mt=swingMusic(mt);
+                    break;
+
+            case 4:sh=loadSpeedLinkedListFromFile("speedList.bin");
+                   break;
+
+            case 5:backwardToy();
+                   break;
+
+            case 6:previousM();
+                   break;
+
+            case 7:nextM();
+                   break;
+
+            case 8:printf("\nDisplaying the list>");
+                   displayS(sh);
+                   break;
+
+            case 9:displayT(th);
+                   break;
+
+            case 10:displayM(mt);
+                    break;
+
+            case 11:printf("BYE BYE");
+                    saveSpeedLinkedListToFile(sh,"speedList.bin");
+                    exit(0);
+                    break;
+
+
+            default:printf("\nInvalid choice!!\nTRY AGAIN\n");
+        }
+    }
+}
+
+/* swingSpeed:Function to swing the cradle according to the speed(position).
+ * Param:sh-Head of the speed list which is pointing to the first node.
+ * Return:sh-Head of the speed list which is pointing to the first node.
+ */
+SPEED swingSpeed(SPEED sh){
+
+    SPEED New;
+    SPEED temp=sh;
+    New=(SPEED)malloc(sizeof(struct speed));
+    New->link=NULL;
+
+    printf("\nEnter the speed with which the cradle should swing>");
+    scanf("%d",&New->speed);
+
+    if(sh==NULL){
+        sh=New;
+        printf("\nSwing the cradle with the speed %d\n(first node)\n",New->speed);
+}
+    else{
+        while(temp->link!=NULL){
+            temp=temp->link;
+        }
+        temp->link=New;
+        printf("\nSwing the cradle with the speed %d\n(inserted node)\n",New->speed);
+
+    }
+    return sh;
+}
+
+/* swingToy:Function to swing the cradle along with the rotation of the toy.
+ * Param:th-Head of the toy list which is pointing to the first node.
+ * Return:th-Head of the toy list which is pointing to the first node.
+ */
+TOY swingToy(TOY th){
+    TOY temp;
+    TOY New;
+    New=(TOY)malloc(sizeof(struct toy));
+    New->rtlink=NULL;
+    New->ltlink=NULL;
+
+    printf("\nEnter the name of the toy with which the cradle should swing>");
+    scanf("%s",New->toy);
+
+    if(th==NULL){
+        th=New;
+        curT=New;
+        printf("\nSwing the cradle with %s\n(First node)\n",New->toy);
+    }
+    else if(searchT(th,New->toy)){
+        printf("\nSwing the cradle with %s\n(node already present)\n",New->toy);
+    }
+    else{
+        temp=th;
+        while(temp->rtlink!=NULL){
+        temp=temp->rtlink;
+       }
+        temp->rtlink=New;
+        New->ltlink=temp;
+        curT=New;
+        printf("\nSwing the cradle with %s\n(inserted node)\n",New->toy);
+       }
+       return th;
+}
+
+/* searchT:Function to search if the given toy is already present in the list.
+ * Param:th-Head of the the toy list which is pointing to the first node.
+ *       str-The name of the toy given by the user.
+ * Return:1 or 0-If one then the toy is present in the list.
+                 If zero then the toy is not pesent in the list.
+ */
+int searchT(TOY th,TOY str){
+    TOY temp=th;
+    while(temp!=NULL){
+        if(strcmp(temp->toy,str)==0){
+            return 1;
+        }
+        temp=temp->rtlink;
+    }
+    return 0;
+}
+
+/* backwardToy:Function to rotate the toys according to the backward of the list */
+void backwardToy(){
+    if(curT==NULL){
+        printf("\nThe list is empty");
+    }
+    else{
+        while(curT!=NULL){
+            printf("\nThe cradle is swinging with the toy %s",curT->toy);
+            curT=curT->ltlink;
+        }
+    }
+}
+
+/* swingMusic:Function to swing the cradle while the music is playing.
+ * Param:mt-Tail of the music list which is pointing to the last node node.
+ * Return:sh-Tail of the toy list which is pointing to the last node.
+ */
+ MUSIC swingMusic(MUSIC mt){
+    MUSIC New;
+    New=(MUSIC)malloc(sizeof(struct music));
+    New->lmlink=New;
+    New->rmlink=New;
+    printf("\nEnter the music to be played while swinging the cradle>");
+    scanf("%s",New->music);
+    if(mt==NULL){
+        mt=New;
+        curM=New;
+        printf("\nThe cradle will swing while %s music is playing\n(first node)",mt->music);
+        return mt;
+    }
+    else if(searchM(mt,New->music)){
+        printf("\nThe cradle will swing while %s music is playing\n(node already present)",New->music);
+        return mt;
+    }
+    else{
+        MUSIC temp=mt->rmlink;
+        New->rmlink=temp;
+        New->lmlink=mt;
+        mt->rmlink=New;
+        temp->lmlink=New;
+        mt=New;
+        curM=New;
+        printf("\nThe cradle will swing while %s music is playing\n(inserted node)",mt->music);
+        return mt;
+    }
+}
+/* searchM:Function to search if the given music is already present in the list.
+ * Param:mt-Tail of the the music list which is pointing to the last node.
+ *       str-The name of the music given by the user.
+ * Return:1 or 0-If one then the music is present in the list.
+                 If zero then the music is not present in the list.
+ */
+int searchM(MUSIC mt,MUSIC str){
+    MUSIC temp=mt->rmlink;
+    if(strcmp(mt->music,str)==0)
+    {
+        return 1;
+    }
+    else
+    {
+    while(temp!=mt){
+        if(strcmp(temp->music,str)==0){
+            return 1;
+      }
+        temp=temp->rmlink;
+    }
+    return 0;
+    }
+}
+
+ /* previousM:Function to play the previous music. */
+ void previousM(){
+    if(curM==NULL){
+        printf("\nNo song");
+    }
+    else{
+        curM=curM->lmlink;
+        printf("%s\n",curM->music);
+    }
+ }
+
+ /* nextM:Function to play the next music. */
+ void nextM(){
+    if(curM==NULL){
+        printf("\nNo song");
+    }
+    else{
+        curM=curM->rmlink;
+        printf("%s\n",curM->music);
+    }
+ }
+
+/* displayS:Function to display the speed list.
+ * param:sh-Head of the speed list pointing to the first node.
+ */
+ void displayS(SPEED sh){
+    SPEED temp=sh;
+    if(temp==NULL){
+        printf("\nList is empty");
+    }
+    else{
+    while(temp!=NULL){
+        printf("\n%d",temp->speed);
+        temp=temp->link;
+    }
+  }
+}
+
+/* displayT:Function to display the toy list.
+ * param:th-Head of the toy list pointing to the first node.
+ */
+void displayT(TOY th){
+    TOY temp=th;
+    if(temp==NULL){
+        printf("\nList is empty");
+    }
+    else{
+    printf("\nDisplaying the list>");
+    while(temp!=NULL){
+        printf("\n%s",temp->toy);
+        temp=temp->rtlink;
+    }
+  }
+}
+
+/* displayM:Function to display the music list.
+ * param:mt-tail of the speed list pointing to the last node.
+ */
+void displayM(MUSIC mt) {
+    if (mt == NULL) {
+        printf("\nList is empty\n");
+        return;
+    }
+
+    printf("\nDisplaying the list:\n");
+    MUSIC current = mt;
+
+    do {
+        printf("%s\n", current->music);
+        current = current->rmlink;
+    } while (current != mt);
+}
