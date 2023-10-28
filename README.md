@@ -15,15 +15,25 @@ Date: 26-June-2023
 * MENU OPTIONS: The program presents the following menu options:
 
  Swing with Speed: Choose the speed at which the cradle should swing.
+ 
  Swing with Toy: Add a toy to the cradle's rotation.
+ 
  Swing with Music: Play music while swinging the cradle.
+ 
  Previous Speed: Recall the previously entered speed.
+ 
  Rotate Toys Backward: Rotate the toys in reverse order.
+ 
  Play Previous Music: Play the previously selected music.
+ 
  Play Next Music: Play the next music in the list.
+ 
  Display Speed List: View the list of selected speeds.
+ 
  Display Toy List: Display the list of toys added.
+ 
  Display Music List: Show the list of selected music.
+ 
  Exit: Close the program. The selected speed list will be saved in a file.
 
 * SPEED CONTROL: You can specify the speed at which the cradle should swing. The program stores this information in a linked list.
@@ -38,23 +48,30 @@ Date: 26-June-2023
   The program includes file operations to save and load the list of selected speeds. You can use these functions to preserve your speed preferences.
 
   saveSpeedLinkedListToFile: Saves the speed list to a binary file.
+  
   loadSpeedLinkedListFromFile: Loads the speed list from a binary file.
 
 * DATA STRUCTURES
   The program uses linked lists to manage speed, toy, and music selections. It stores these selections in the following data structures:
 
   speed: Linked list to manage cradle swinging speed.
+  
   toy: Doubly linked list to manage toy rotation.
+  
   music: Circular linked list to manage music playlist.
 
 * ADDITIONAL INFORMATION
   The program assumes that sensor data is provided through a variable data. If data is equal to 1, the cradle swings; otherwise, it doesn't.
+  
   You can rotate toys backward, but it assumes that there are toys in the list to rotate.
+  
   Music playback assumes that there are songs in the playlist to play.
 
 * USAGE TIPS
   Always start by selecting a speed. The program can remember and replay the last selected speed.
+  
   You can add toys and play music for an enhanced soothing experience.
+  
   Don't forget to exit the program when you're done. It will save the selected speed list for future use.
 
 * CONCLUSION
